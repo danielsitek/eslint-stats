@@ -1,8 +1,52 @@
 {
-  "name": "eslint-stats",
+  "name": "@danielsitek/eslint-stats",
   "version": "1.0.1",
-  "description": "A package of custom formatters that show aggregated stats of eslint errors",
-  "main": "index.js",
+  "description": "Modern TypeScript formatters for ESLint with aggregated error/warning statistics and visual graphs - Zero dependencies",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./by-error": {
+      "types": "./dist/formatters/by-error.d.ts",
+      "import": "./dist/formatters/by-error.js"
+    },
+    "./by-warning": {
+      "types": "./dist/formatters/by-warning.d.ts",
+      "import": "./dist/formatters/by-warning.js"
+    },
+    "./by-error-and-warning": {
+      "types": "./dist/formatters/by-error-and-warning.d.ts",
+      "import": "./dist/formatters/by-error-and-warning.js"
+    },
+    "./by-error-and-warning-stacked": {
+      "types": "./dist/formatters/by-error-and-warning-stacked.d.ts",
+      "import": "./dist/formatters/by-error-and-warning-stacked.js"
+    },
+    "./by-folder": {
+      "types": "./dist/formatters/by-folder.d.ts",
+      "import": "./dist/formatters/by-folder.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "eslint",
+    "formatter",
+    "statistics",
+    "stats",
+    "aggregated",
+    "visualization",
+    "typescript",
+    "zero-dependencies",
+    "eslint9"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
@@ -22,13 +66,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ganimomer/eslint-stats.git"
+    "url": "https://github.com/danielsitek/eslint-stats.git"
   },
+  "bugs": {
+    "url": "https://github.com/danielsitek/eslint-stats/issues"
+  },
+  "homepage": "https://github.com/danielsitek/eslint-stats#readme",
   "author": {
-    "name": "Omer Ganim",
-    "email": "ganimomer@gmail.com",
-    "url": "http://github.com/ganimomer"
+    "name": "Daniel Sitek",
+    "email": "me@danielsitek.com",
+    "url": "https://github.com/danielsitek"
   },
+  "contributors": [
+    {
+      "name": "Omer Ganim",
+      "email": "ganimomer@gmail.com",
+      "url": "http://github.com/ganimomer"
+    }
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
