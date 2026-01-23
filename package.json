@@ -1,37 +1,104 @@
 {
-  "name": "eslint-stats",
-  "version": "1.0.1",
-  "description": "A package of custom formatters that show aggregated stats of eslint errors",
-  "main": "index.js",
+  "name": "@danielsitek/eslint-stats",
+  "version": "0.0.0",
+  "description": "Modern TypeScript formatters for ESLint with aggregated error/warning statistics and visual graphs - Zero dependencies",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./by-error": {
+      "types": "./dist/formatters/by-error.d.ts",
+      "import": "./dist/formatters/by-error.js"
+    },
+    "./by-warning": {
+      "types": "./dist/formatters/by-warning.d.ts",
+      "import": "./dist/formatters/by-warning.js"
+    },
+    "./by-error-and-warning": {
+      "types": "./dist/formatters/by-error-and-warning.d.ts",
+      "import": "./dist/formatters/by-error-and-warning.js"
+    },
+    "./by-error-and-warning-stacked": {
+      "types": "./dist/formatters/by-error-and-warning-stacked.d.ts",
+      "import": "./dist/formatters/by-error-and-warning-stacked.js"
+    },
+    "./by-folder": {
+      "types": "./dist/formatters/by-folder.d.ts",
+      "import": "./dist/formatters/by-folder.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "eslint",
+    "formatter",
+    "statistics",
+    "stats",
+    "aggregated",
+    "visualization",
+    "typescript",
+    "zero-dependencies",
+    "eslint9"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "unit": "cross-env NODE_ENV=test nyc jasmine test/**/*.js",
-    "test": "npm run lint && npm run unit",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "tsx --test test/**/*.test.ts",
+    "test:watch": "tsx --test --watch test/**/*.test.ts",
+    "prepublishOnly": "npm run build && npm test",
+    "demo:error": "eslint .demo/test.js -f ./dist/formatters/by-error.js -c .demo/eslint.config.mjs",
+    "demo:warning": "eslint .demo/test.js -f ./dist/formatters/by-warning.js -c .demo/eslint.config.mjs",
+    "demo:both": "eslint .demo/test.js -f ./dist/formatters/by-error-and-warning.js -c .demo/eslint.config.mjs",
+    "demo:stacked": "eslint .demo/test.js -f ./dist/formatters/by-error-and-warning-stacked.js -c .demo/eslint.config.mjs",
+    "demo:folder": "eslint .demo/test.js -f ./dist/formatters/by-folder.js -c .demo/eslint.config.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ganimomer/eslint-stats.git"
+    "url": "https://github.com/danielsitek/eslint-stats.git"
   },
+  "bugs": {
+    "url": "https://github.com/danielsitek/eslint-stats/issues"
+  },
+  "homepage": "https://github.com/danielsitek/eslint-stats#readme",
   "author": {
-    "name": "Omer Ganim",
-    "email": "ganimomer@gmail.com",
-    "url": "http://github.com/ganimomer"
+    "name": "Daniel Sitek",
+    "email": "me@danielsitek.com",
+    "url": "https://github.com/danielsitek"
   },
+  "contributors": [
+    {
+      "name": "Omer Ganim",
+      "email": "ganimomer@gmail.com",
+      "url": "http://github.com/ganimomer"
+    }
+  ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=20.0.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
   },
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "3.0.2",
-    "cross-env": "5.2.0",
-    "eslint": "5.8.0",
-    "eslint-config-wix-editor": "6.0.0",
-    "jasmine": "3.3.0",
-    "nyc": "13.1.0"
-  },
-  "dependencies": {
-    "chalk": "^2.4.1",
-    "lodash": "^4.17.4"
+    "@types/node": "^25.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
