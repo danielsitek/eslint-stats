@@ -21,7 +21,7 @@ const countBy = <T>(
       return result;
     }
 
-    result[key] = (Object.hasOwn(result, key) ? result[key] : 0) + 1;
+    result[key] = (result[key] ?? 0) + 1;
 
     return result;
   }, {});
@@ -39,11 +39,11 @@ const groupBy = <T>(
       return result;
     }
 
-    if (!Object.hasOwn(result, key)) {
+    if (!result[key]) {
       result[key] = [];
     }
 
-    result[key].push(item);
+    result[key]!.push(item);
 
     return result;
   }, {});

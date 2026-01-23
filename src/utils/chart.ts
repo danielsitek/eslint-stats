@@ -27,14 +27,9 @@ const getBarRatio = (
 };
 
 const sortByKey = <T>(obj: Record<string, T>): T[] => {
-  return Object.keys(obj)
-    .sort()
-    .map((key) => {
-      if (!Object.hasOwn(obj, key)) {
-        throw new Error(`Key ${key} not found in object`);
-      }
-      return obj[key];
-    });
+  return Object.entries(obj)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, value]) => value);
 };
 
 export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
@@ -99,12 +94,15 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   );
 
   const maxRuleLength = getMaxRuleLength(normalizedStats);
-  const maxResults = Object.fromEntries(
-    allSeverities.map((severity) => [
-      severity,
-      Math.max(...Object.values(stats).map((s) => s[severity] ?? 0)),
-    ]),
-  );
+  const maxResults: Record<string, number> = {};
+  for (const severity of allSeverities) {
+    maxResults[severity] = Math.max(
+      ...Object.values(stats).map((s) => {
+        const val = severity === "Error" ? s.Error : s.Warning;
+        return val ?? 0;
+      }),
+    );
+  }
   const maxResultLengths = Object.fromEntries(
     Object.entries(maxResults).map(([key, value]) => [
       key,
@@ -136,11 +134,11 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   return `${Object.entries(normalizedStats)
     .map(([ruleId, ruleStats]) => {
       const ruleCell = `${ruleId}: `.padEnd(maxRuleLength + 2);
-      const errorCountCell = String(ruleStats.Error).padStart(
-        maxResultLengths.Error,
-      );
+      const errorLength = maxResultLengths["Error"] ?? 0;
+      const warningLength = maxResultLengths["Warning"] ?? 0;
+      const errorCountCell = String(ruleStats.Error).padStart(errorLength);
       const warningCountCell = String(ruleStats.Warning).padStart(
-        maxResultLengths.Warning,
+        warningLength,
       );
       const countCell = magenta(`${errorCountCell},${warningCountCell}`);
       const barCell = getStackedBar(ruleStats);
