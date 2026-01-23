@@ -1,4 +1,6 @@
+![Build Status](https://github.com/danielsitek/eslint-stats/actions/workflows/dev.yml/badge.svg?branch=main)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6c466a724da04212b8471eda7c6adf16)](https://app.codacy.com/gh/danielsitek/eslint-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Maintainability](https://qlty.sh/gh/danielsitek/projects/eslint-stats/maintainability.svg)](https://qlty.sh/gh/danielsitek/projects/eslint-stats)
 
 # Statistic Reporter for ESLint
 
