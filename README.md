@@ -1,7 +1,7 @@
-[![Coverage Status](https://coveralls.io/repos/ganimomer/eslint-stats/badge.svg?branch=master)](https://coveralls.io/r/ganimomer/eslint-stats?branch=master)
-[![Build Status](https://travis-ci.org/ganimomer/eslint-stats.png)](https://travis-ci.org/ganimomer/eslint-stats)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6c466a724da04212b8471eda7c6adf16)](https://app.codacy.com/gh/danielsitek/eslint-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-#Statistic Reporter for ESLint.
+# Statistic Reporter for ESLint.
+
 Analyses the files for error frequency, rather than location. This is helpful when introducing ESLint to an existing project.
 
 ![screenshot](https://raw.githubusercontent.com/ganimomer/eslint-stats/master/screenshot.png)
