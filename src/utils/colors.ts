@@ -12,8 +12,13 @@ export const color = (text: string, style: Color): string => {
 };
 
 export const red = (text: string): string => color(text, "red");
+
 export const yellow = (text: string): string => color(text, "yellow");
+
 export const magenta = (text: string): string => color(text, "magenta");
+
 export const underline = (text: string): string => color(text, "underline");
+
 export const bgRed = (text: string): string => color(text, "bgRed");
+
 export const bgYellow = (text: string): string => color(text, "bgYellow");

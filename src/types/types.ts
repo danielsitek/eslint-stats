@@ -9,18 +9,12 @@ export interface SeverityStats {
   Warning?: number;
 }
 
-export interface RuleStats {
-  [ruleId: string]: SeverityStats;
-}
+export type RuleStats = Record<string, SeverityStats>;
 
-export interface FolderStats {
-  [folderPath: string]: RuleStats;
-}
+export type FolderStats = Record<string, RuleStats>;
 
 export type SeverityLevel = 0 | 1 | 2;
 
 export interface SeverityMap {
-  names: {
-    [key: number]: "Warning" | "Error";
-  };
+  names: Record<number, "Warning" | "Error">;
 }

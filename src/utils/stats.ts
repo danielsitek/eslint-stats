@@ -12,43 +12,42 @@ import { names } from "./severities.js";
 // Native replacement for lodash countBy
 const countBy = <T>(
   array: T[],
-  iteratee: (item: T) => string,
+  iterate: (item: T) => string,
 ): Record<string, number> => {
-  return array.reduce(
-    (result, item) => {
-      const key = iteratee(item);
-      result[key] = (result[key] || 0) + 1;
-      return result;
-    },
-    {} as Record<string, number>,
-  );
+  return array.reduce<Record<string, number>>((result, item) => {
+    const key = iterate(item);
+
+    result[key] = (result[key] || 0) + 1;
+
+    return result;
+  }, {});
 };
 
 // Native replacement for lodash groupBy
 const groupBy = <T>(
   array: T[],
-  iteratee: (item: T) => string,
+  iterate: (item: T) => string,
 ): Record<string, T[]> => {
-  return array.reduce(
-    (result, item) => {
-      const key = iteratee(item);
-      if (!result[key]) {
-        result[key] = [];
-      }
-      result[key].push(item);
-      return result;
-    },
-    {} as Record<string, T[]>,
-  );
+  return array.reduce<Record<string, T[]>>((result, item) => {
+    const key = iterate(item);
+
+    if (!result[key]) {
+      result[key] = [];
+    }
+
+    result[key].push(item);
+
+    return result;
+  }, {});
 };
 
 // Native replacement for lodash mapValues
 const mapValues = <T, R>(
   obj: Record<string, T>,
-  iteratee: (value: T) => R,
+  iterate: (value: T) => R,
 ): Record<string, R> => {
   return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, iteratee(value)]),
+    Object.entries(obj).map(([key, value]) => [key, iterate(value)]),
   );
 };
 
@@ -61,18 +60,22 @@ export function byRule(
   severity?: SeverityLevel,
 ): RuleStats {
   const allMessages = results.flatMap((result) => result.messages);
+
   const messagesInSeverities = severity
     ? allMessages.filter((message) => message.severity === severity)
     : allMessages;
+
   const messagesByRuleId = groupBy(
     messagesInSeverities,
-    (message) => message.ruleId || "unknown",
+    (message) => message.ruleId ?? "unknown",
   );
+
   return mapValues(messagesByRuleId, getStatsForRule);
 }
 
 const getDirName = (result: LintResult): string => {
   const dirname = path.dirname(result.filePath);
+
   return dirname === "." ? "Base Folder" : dirname;
 };
 
@@ -81,5 +84,6 @@ export function byFolderAndRule(
   severity?: SeverityLevel,
 ): FolderStats {
   const byDirName = groupBy(results, getDirName);
+
   return mapValues(byDirName, (messages) => byRule(messages, severity));
 }

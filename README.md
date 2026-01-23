@@ -1,6 +1,6 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6c466a724da04212b8471eda7c6adf16)](https://app.codacy.com/gh/danielsitek/eslint-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-# Statistic Reporter for ESLint.
+# Statistic Reporter for ESLint
 
 Modern TypeScript formatters for ESLint with aggregated error and warning statistics. Analyzes files by error frequency rather than location, making it easier to prioritize fixes when introducing ESLint to existing projects.
 

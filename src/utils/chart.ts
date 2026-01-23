@@ -36,8 +36,8 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
   const maxRuleLength = getMaxRuleLength(stats);
   const maxResult = Math.max(
     ...Object.values(stats).flatMap((ruleStats) => [
-      ruleStats.Error || 0,
-      ruleStats.Warning || 0,
+      ruleStats.Error ?? 0,
+      ruleStats.Warning ?? 0,
     ]),
   );
   const maxResultLength = String(maxResult).length;
@@ -97,7 +97,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   const maxResults = Object.fromEntries(
     allSeverities.map((severity) => [
       severity,
-      Math.max(...Object.values(stats).map((s) => s[severity] || 0)),
+      Math.max(...Object.values(stats).map((s) => s[severity] ?? 0)),
     ]),
   );
   const maxResultLengths = Object.fromEntries(
