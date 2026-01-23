@@ -95,6 +95,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
 
   const maxRuleLength = getMaxRuleLength(normalizedStats);
   const maxResults: Record<string, number> = {};
+
   for (const severity of allSeverities) {
     maxResults[severity] = Math.max(
       ...Object.values(stats).map((s) => {
@@ -103,12 +104,14 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
       }),
     );
   }
+
   const maxResultLengths = Object.fromEntries(
     Object.entries(maxResults).map(([key, value]) => [
       key,
       getStringLength(value),
     ]),
   );
+
   const maxRuleSum = Math.max(
     ...Object.values(normalizedStats).map((x) => x.Error + x.Warning),
   );
@@ -134,8 +137,8 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   return `${Object.entries(normalizedStats)
     .map(([ruleId, ruleStats]) => {
       const ruleCell = `${ruleId}: `.padEnd(maxRuleLength + 2);
-      const errorLength = maxResultLengths["Error"] ?? 0;
-      const warningLength = maxResultLengths["Warning"] ?? 0;
+      const errorLength = maxResultLengths.Error ?? 0;
+      const warningLength = maxResultLengths.Warning ?? 0;
       const errorCountCell = String(ruleStats.Error).padStart(errorLength);
       const warningCountCell = String(ruleStats.Warning).padStart(
         warningLength,

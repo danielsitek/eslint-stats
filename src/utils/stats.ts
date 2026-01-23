@@ -15,7 +15,8 @@ const countBy = <T>(
   iterate: (item: T) => string,
 ): Record<string, number> => {
   return array.reduce<Record<string, number>>((result, item) => {
-    const key = iterate(item);
+    const key = String(iterate(item));
+
     // Validate key to prevent prototype pollution
     if (key === "__proto__" || key === "constructor" || key === "prototype") {
       return result;
@@ -33,17 +34,18 @@ const groupBy = <T>(
   iterate: (item: T) => string,
 ): Record<string, T[]> => {
   return array.reduce<Record<string, T[]>>((result, item) => {
-    const key = iterate(item);
+    const key = String(iterate(item));
+
     // Validate key to prevent prototype pollution
     if (key === "__proto__" || key === "constructor" || key === "prototype") {
       return result;
     }
 
-    if (!result[key]) {
+    if (!Array.isArray(result[key])) {
       result[key] = [];
     }
 
-    result[key]!.push(item);
+    result[key].push(item);
 
     return result;
   }, {});
