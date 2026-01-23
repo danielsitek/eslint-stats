@@ -17,10 +17,10 @@ const countBy = <T>(
   return array.reduce<Record<string, number>>((result, item) => {
     const key = iterate(item);
 
-    result[key] = (result[key] || 0) + 1;
+    result[key] = (Object.hasOwn(result, key) ? result[key] : 0) + 1;
 
     return result;
-  }, {});
+  }, Object.create(null));
 };
 
 // Native replacement for lodash groupBy
@@ -31,14 +31,14 @@ const groupBy = <T>(
   return array.reduce<Record<string, T[]>>((result, item) => {
     const key = iterate(item);
 
-    if (!result[key]) {
+    if (!Object.hasOwn(result, key)) {
       result[key] = [];
     }
 
     result[key].push(item);
 
     return result;
-  }, {});
+  }, Object.create(null));
 };
 
 // Native replacement for lodash mapValues

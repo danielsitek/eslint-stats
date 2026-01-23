@@ -29,7 +29,12 @@ const getBarRatio = (
 const sortByKey = <T>(obj: Record<string, T>): T[] => {
   return Object.keys(obj)
     .sort()
-    .map((key) => obj[key]);
+    .map((key) => {
+      if (!Object.hasOwn(obj, key)) {
+        throw new Error(`Key ${key} not found in object`);
+      }
+      return obj[key];
+    });
 };
 
 export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
