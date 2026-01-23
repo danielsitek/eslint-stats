@@ -1,7 +1,0 @@
-{
- "extends": "wix-editor/node",
-  "rules": {
-    "no-confusing-arrow": "off",
-    "no-useless-concat": "off"
-  }
-}
