@@ -6,8 +6,8 @@ import type {
   FolderStats,
   SeverityLevel,
   SeverityStats,
-} from "../types/types";
-import { names } from "./severities";
+} from "../types/types.js";
+import { names } from "./severities.js";
 
 // Native replacement for lodash countBy
 const countBy = <T>(

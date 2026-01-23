@@ -1,4 +1,4 @@
-import type { SeverityLevel, SeverityMap } from "../types/types";
+import type { SeverityLevel, SeverityMap } from "../types/types.js";
 
 export const names: SeverityMap["names"] = {
   1: "Warning",

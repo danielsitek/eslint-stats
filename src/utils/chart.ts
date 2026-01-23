@@ -1,6 +1,6 @@
-import { magenta, underline } from "./colors";
-import type { RuleStats, FolderStats, SeverityStats } from "../types/types";
-import { getString } from "./bar";
+import { magenta, underline } from "./colors.js";
+import type { RuleStats, FolderStats, SeverityStats } from "../types/types.js";
+import { getString } from "./bar.js";
 
 const barColors = {
   Error: "red" as const,
