@@ -4,6 +4,10 @@
   "description": "A package of custom formatters that show aggregated stats of eslint errors",
   "main": "index.js",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "unit": "cross-env NODE_ENV=test nyc jasmine test/**/*.js",
     "test": "npm run lint && npm run unit",
@@ -23,7 +27,10 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^9.39.2"
+    "@types/node": "^25.0.10",
+    "eslint": "^9.39.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "chalk": "^5.6.2",
