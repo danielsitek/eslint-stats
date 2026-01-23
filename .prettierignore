@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.nyc_output
+*.log
+package-lock.json
+MODERNIZATION_PLAN.md
+
+# Old files (before migration)
+*.js
+!eslint.config.mjs
+util/
+test/
+.travis.yml
+.nycrc
+.codacy/

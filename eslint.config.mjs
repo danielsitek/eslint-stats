@@ -1,6 +1,7 @@
 import { defineConfig } from "eslint/config";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import prettierConfig from "eslint-config-prettier";
 
 export default defineConfig([
   {
@@ -21,6 +22,7 @@ export default defineConfig([
       "@typescript-eslint/no-unused-vars": "error",
     },
   },
+  prettierConfig,
   {
     ignores: ["dist/**", "node_modules/**", "coverage/**"],
   },
