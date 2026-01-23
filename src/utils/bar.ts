@@ -1,5 +1,6 @@
-import chalk from "chalk";
+import { red, yellow } from "./colors";
 
 export const getString = (length: number, color: "red" | "yellow"): string => {
-  return chalk[color](" ".repeat(length));
+  const colorFn = color === "red" ? red : yellow;
+  return colorFn(" ".repeat(length));
 };

@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { magenta, underline } from "./colors";
 import type { RuleStats, FolderStats, SeverityStats } from "../types/types";
 import { getString } from "./bar";
 
@@ -55,9 +55,7 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
     const ruleCell = `${ruleName}: `.padEnd(maxRuleLength + 2);
     return Object.entries(ruleStats)
       .map(([severity, count]) => {
-        const countCell = chalk.magenta(
-          String(count).padStart(maxResultLength),
-        );
+        const countCell = magenta(String(count).padStart(maxResultLength));
         const barCell = getString(
           Math.floor(barRatio * count),
           barColors[severity as "Error" | "Warning"],
@@ -139,7 +137,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
       const warningCountCell = String(ruleStats.Warning).padStart(
         maxResultLengths.Warning,
       );
-      const countCell = chalk.magenta(`${errorCountCell},${warningCountCell}`);
+      const countCell = magenta(`${errorCountCell},${warningCountCell}`);
       const barCell = getStackedBar(ruleStats);
       return `${ruleCell}${countCell}|${barCell}`;
     })
@@ -149,7 +147,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
 const getFolderOutput =
   (maxWidth: number) =>
   (folderStats: RuleStats, folderName: string): string =>
-    `${chalk.underline(`${folderName}:`)}\n${getObjectOutput(folderStats, maxWidth)}`;
+    `${underline(`${folderName}:`)}\n${getObjectOutput(folderStats, maxWidth)}`;
 
 export function getOutputByFolder(
   stats: FolderStats,
