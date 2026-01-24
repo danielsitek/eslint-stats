@@ -4,6 +4,7 @@ coverage
 npm-debug.log
 .nyc_output
 .env.local
+lcov.info
 
 # Build output
 dist/
