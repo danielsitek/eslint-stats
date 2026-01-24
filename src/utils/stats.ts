@@ -9,16 +9,7 @@ import type {
 import { severityLabel } from "./severities.js";
 
 const isInvalidRuleId = (message: LintMessage): boolean => {
-  return (
-    typeof message.ruleId !== "string" || message.ruleId.trim().length === 0
-  );
-};
-
-const isSeverityFiltered = (
-  message: LintMessage,
-  severity?: SeverityLevel,
-): boolean => {
-  return severity !== undefined && message.severity !== severity;
+  return typeof message.ruleId !== "string" || message.ruleId.length === 0;
 };
 
 const loopOverMessages = (
@@ -26,24 +17,27 @@ const loopOverMessages = (
   result: LintResult,
   severity?: SeverityLevel,
 ): void => {
+  const shouldFilter = severity !== undefined;
+
   for (const message of result.messages) {
     if (isInvalidRuleId(message)) {
       continue;
     }
 
-    if (isSeverityFiltered(message, severity)) {
+    if (shouldFilter && message.severity !== severity) {
       continue;
     }
 
     const ruleId = message.ruleId as string;
-    const severityName = severityLabel(message.severity);
+    let ruleStats = objectStats[ruleId];
 
-    if (!objectStats[ruleId]) {
-      objectStats[ruleId] = {};
+    // Single check & assignment
+    if (!ruleStats) {
+      ruleStats = objectStats[ruleId] = {};
     }
 
-    objectStats[ruleId][severityName] =
-      (objectStats[ruleId][severityName] ?? 0) + 1;
+    const severityKey = severityLabel(message.severity);
+    ruleStats[severityKey] = (ruleStats[severityKey] || 0) + 1;
   }
 };
 
