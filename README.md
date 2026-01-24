@@ -26,35 +26,18 @@ Modern TypeScript formatters for ESLint with aggregated error and warning statis
 npm install --save-dev @danielsitek/eslint-stats
 ```
 
-## Usage
+## Usage with ESLint
 
-### With ESLint CLI
+Create file `stats.mjs`:
 
-```bash
-# Using specific formatters
-eslint src/ -f ./node_modules/@danielsitek/eslint-stats/dist/formatters/by-error.js
-eslint src/ -f ./node_modules/@danielsitek/eslint-stats/dist/formatters/by-error-and-warning.js
-eslint src/ -f ./node_modules/@danielsitek/eslint-stats/dist/formatters/by-folder.js
+```js
+import { byErrorAndWarning } from "@danielsitek/eslint-stats/by-error-and-warning";
+
+export default byErrorAndWarning;
 ```
 
-### Programmatic Usage
-
-```typescript
-import {
-  byError,
-  byWarning,
-  byErrorAndWarning,
-} from "@danielsitek/eslint-stats";
-import { ESLint } from "eslint";
-
-const eslint = new ESLint({
-  // your config
-});
-
-const results = await eslint.lintFiles(["src/**/*.ts"]);
-const formatter = await eslint.loadFormatter(byError);
-
-console.log(formatter.format(results));
+```bash
+eslint . --format ./stats.mjs
 ```
 
 ## Available Formatters
