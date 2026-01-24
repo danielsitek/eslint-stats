@@ -1,10 +1,14 @@
-import type { SeverityLevel, SeverityMap } from "../types/types.js";
+import type { SeverityLevel, SeverityType } from "../types/types.js";
 
-export const names: SeverityMap["names"] = {
-  1: "Warning",
-  2: "Error",
+export const names: Record<number, SeverityType> = {
+  1: "warning",
+  2: "error",
 };
 
-export const normalize = (severity?: SeverityLevel): SeverityLevel[] => {
-  return severity ? [severity] : [1, 2];
+export const severityLabel = (severity: SeverityLevel): SeverityType => {
+  if (severity === 2) {
+    return names[2];
+  }
+
+  return names[1];
 };

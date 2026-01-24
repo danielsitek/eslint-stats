@@ -5,83 +5,41 @@ import type {
   RuleStats,
   FolderStats,
   SeverityLevel,
-  SeverityStats,
 } from "../types/types.js";
-import { names } from "./severities.js";
+import { severityLabel } from "./severities.js";
 
-// Native replacement for lodash countBy
-const countBy = <T>(
-  array: T[],
-  iterate: (item: T) => string,
-): Record<string, number> => {
-  return array.reduce<Record<string, number>>((result, item) => {
-    const key = String(iterate(item));
-
-    // Validate key to prevent prototype pollution
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
-      return result;
-    }
-
-    result[key] = (result[key] ?? 0) + 1;
-
-    return result;
-  }, {});
+const isInvalidRuleId = (message: LintMessage): boolean => {
+  return typeof message.ruleId !== "string" || message.ruleId.length === 0;
 };
 
-// Native replacement for lodash groupBy
-const groupBy = <T>(
-  array: T[],
-  iterate: (item: T) => string,
-): Record<string, T[]> => {
-  return array.reduce<Record<string, T[]>>((result, item) => {
-    const key = String(iterate(item));
-
-    // Validate key to prevent prototype pollution
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
-      return result;
-    }
-
-    if (!Array.isArray(result[key])) {
-      result[key] = [];
-    }
-
-    result[key].push(item);
-
-    return result;
-  }, {});
-};
-
-// Native replacement for lodash mapValues
-const mapValues = <T, R>(
-  obj: Record<string, T>,
-  iterate: (value: T) => R,
-): Record<string, R> => {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, iterate(value)]),
-  );
-};
-
-const getStatsForRule = (ruleMessages: LintMessage[]): SeverityStats => {
-  return countBy(ruleMessages, (message) => names[message.severity as 1 | 2]);
-};
-
-export function byRule(
-  results: LintResult[],
+const loopOverMessages = (
+  objectStats: RuleStats,
+  result: LintResult,
   severity?: SeverityLevel,
-): RuleStats {
-  const allMessages = results.flatMap((result) => result.messages);
+): void => {
+  const shouldFilter = severity !== undefined;
 
-  const messagesInSeverities = severity
-    ? allMessages.filter((message) => message.severity === severity)
-    : allMessages;
+  for (const message of result.messages) {
+    if (isInvalidRuleId(message)) {
+      continue;
+    }
 
-  const messagesByRuleId = groupBy(
-    messagesInSeverities,
-    (message) => message.ruleId ?? "unknown",
-  );
+    if (shouldFilter && message.severity !== severity) {
+      continue;
+    }
 
-  return mapValues(messagesByRuleId, getStatsForRule);
-}
+    const ruleId = message.ruleId!;
+    let ruleStats = objectStats[ruleId];
+
+    // Single check & assignment
+    if (!ruleStats) {
+      ruleStats = objectStats[ruleId] = {};
+    }
+
+    const severityKey = severityLabel(message.severity);
+    ruleStats[severityKey] = (ruleStats[severityKey] ?? 0) + 1;
+  }
+};
 
 const getDirName = (result: LintResult): string => {
   const dirname = path.dirname(result.filePath);
@@ -89,11 +47,38 @@ const getDirName = (result: LintResult): string => {
   return dirname === "." ? "Base Folder" : dirname;
 };
 
+export function byRule(
+  results: LintResult[],
+  severity?: SeverityLevel,
+): RuleStats {
+  const stats: RuleStats = {};
+
+  for (const result of results) {
+    loopOverMessages(stats, result, severity);
+  }
+
+  return stats;
+}
+
 export function byFolderAndRule(
   results: LintResult[],
   severity?: SeverityLevel,
 ): FolderStats {
-  const byDirName = groupBy(results, getDirName);
+  const stats: FolderStats = {};
 
-  return mapValues(byDirName, (messages) => byRule(messages, severity));
+  for (const result of results) {
+    if (result.messages.length === 0) {
+      continue;
+    }
+
+    const folderName = getDirName(result);
+
+    if (!stats[folderName]) {
+      stats[folderName] = {};
+    }
+
+    loopOverMessages(stats[folderName], result, severity);
+  }
+
+  return stats;
 }
