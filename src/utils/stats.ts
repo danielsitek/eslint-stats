@@ -28,7 +28,7 @@ const loopOverMessages = (
       continue;
     }
 
-    const ruleId = message.ruleId as string;
+    const ruleId = message.ruleId!;
     let ruleStats = objectStats[ruleId];
 
     // Single check & assignment
@@ -37,7 +37,7 @@ const loopOverMessages = (
     }
 
     const severityKey = severityLabel(message.severity);
-    ruleStats[severityKey] = (ruleStats[severityKey] || 0) + 1;
+    ruleStats[severityKey] = (ruleStats[severityKey] ?? 0) + 1;
   }
 };
 
