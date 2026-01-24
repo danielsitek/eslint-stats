@@ -65,20 +65,53 @@ const getStatsForRule = (ruleMessages: LintMessage[]): SeverityStats => {
   return countBy(ruleMessages, (message) => names[message.severity as 1 | 2]);
 };
 
+const filterMessagesBySeverity = (
+  messages: LintMessage[],
+  severity?: SeverityLevel,
+): LintMessage[] => {
+  if (severity === undefined || (severity !== 1 && severity !== 2)) {
+    return messages;
+  }
+
+  return messages.filter((message) => message.severity === severity);
+};
+
+const groupMessagesByRuleId = (
+  messages: LintMessage[],
+): Record<string, LintMessage[]> => {
+  const filteredMessages = messages.filter(
+    (message) => typeof message.ruleId === "string" && message.ruleId.length,
+  );
+
+  return groupBy(filteredMessages, (message) => message.ruleId as string);
+};
+
 export function byRule(
   results: LintResult[],
   severity?: SeverityLevel,
 ): RuleStats {
-  const allMessages = results.flatMap((result) => result.messages);
+  const allMessages = results
+    .flatMap((result) => result.messages)
+    .filter(
+      // Filter out not a string `ruleId` messages
+      (message) => typeof message.ruleId === "string" && message.ruleId.length,
+    );
 
-  const messagesInSeverities = severity
-    ? allMessages.filter((message) => message.severity === severity)
-    : allMessages;
+  console.log("===");
 
-  const messagesByRuleId = groupBy(
-    messagesInSeverities,
-    (message) => message.ruleId ?? "unknown",
-  );
+  console.log("results:", results);
+
+  console.log("allMessages:", allMessages);
+
+  const messagesInSeverities = filterMessagesBySeverity(allMessages, severity);
+
+  console.log("messagesInSeverities:", messagesInSeverities);
+
+  const messagesByRuleId = groupMessagesByRuleId(messagesInSeverities);
+
+  console.log("messagesByRuleId:", messagesByRuleId);
+
+  console.log("===");
 
   return mapValues(messagesByRuleId, getStatsForRule);
 }
