@@ -1,7 +1,9 @@
-![Build Status](https://github.com/danielsitek/eslint-stats/actions/workflows/dev.yml/badge.svg?branch=main)
+[![Build Status](https://github.com/danielsitek/eslint-stats/actions/workflows/dev.yml/badge.svg?branch=main)](https://github.com/danielsitek/eslint-stats/actions)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6c466a724da04212b8471eda7c6adf16)](https://app.codacy.com/gh/danielsitek/eslint-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/6c466a724da04212b8471eda7c6adf16)](https://app.codacy.com/gh/danielsitek/eslint-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Maintainability](https://qlty.sh/gh/danielsitek/projects/eslint-stats/maintainability.svg)](https://qlty.sh/gh/danielsitek/projects/eslint-stats)
+[![GitHub Release](https://img.shields.io/github/v/release/danielsitek/eslint-stats)](https://github.com/danielsitek/eslint-stats/releases)
+[![NPM Version](https://img.shields.io/npm/v/%40danielsitek%2Feslint-stats)](https://www.npmjs.com/package/@danielsitek/eslint-stats)
 
 # Statistic Reporter for ESLint
 
