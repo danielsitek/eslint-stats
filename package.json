@@ -57,6 +57,7 @@
     "format:check": "prettier --check .",
     "test": "tsx --test test/**/*.test.ts",
     "test:watch": "tsx --test --watch test/**/*.test.ts",
+    "test:coverage": "tsx --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info --test test/**/*.test.ts",
     "prepublishOnly": "npm run build && npm test",
     "demo:error": "eslint .demo/test.js -f ./dist/formatters/by-error.js -c .demo/eslint.config.mjs",
     "demo:warning": "eslint .demo/test.js -f ./dist/formatters/by-warning.js -c .demo/eslint.config.mjs",
