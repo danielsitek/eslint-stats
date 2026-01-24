@@ -8,39 +8,6 @@ import type {
 } from "../types/types.js";
 import { severityLabel } from "./severities.js";
 
-// Native replacement for lodash groupBy
-const groupBy = <T>(
-  array: T[],
-  iterate: (item: T) => string,
-): Record<string, T[]> => {
-  return array.reduce<Record<string, T[]>>((result, item) => {
-    const key = String(iterate(item));
-
-    // Validate key to prevent prototype pollution
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
-      return result;
-    }
-
-    if (!Array.isArray(result[key])) {
-      result[key] = [];
-    }
-
-    result[key].push(item);
-
-    return result;
-  }, {});
-};
-
-// Native replacement for lodash mapValues
-const mapValues = <T, R>(
-  obj: Record<string, T>,
-  iterate: (value: T) => R,
-): Record<string, R> => {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, iterate(value)]),
-  );
-};
-
 const isInvalidRuleId = (message: LintMessage): boolean => {
   return (
     typeof message.ruleId !== "string" || message.ruleId.trim().length === 0
@@ -54,36 +21,31 @@ const isSeverityFiltered = (
   return severity !== undefined && message.severity !== severity;
 };
 
-export function byRule(
-  results: LintResult[],
+const loopOverMessages = (
+  objectStats: RuleStats,
+  result: LintResult,
   severity?: SeverityLevel,
-): RuleStats {
-  // Single-pass optimization: flatten, filter, group, and count in one reduce
-  const stats: RuleStats = {};
-
-  for (const result of results) {
-    for (const message of result.messages) {
-      if (isInvalidRuleId(message)) {
-        continue;
-      }
-
-      if (isSeverityFiltered(message, severity)) {
-        continue;
-      }
-
-      const ruleId = message.ruleId as string;
-      const severityName = severityLabel(message.severity);
-
-      if (!stats[ruleId]) {
-        stats[ruleId] = {};
-      }
-
-      stats[ruleId][severityName] = (stats[ruleId][severityName] ?? 0) + 1;
+): void => {
+  for (const message of result.messages) {
+    if (isInvalidRuleId(message)) {
+      continue;
     }
-  }
 
-  return stats;
-}
+    if (isSeverityFiltered(message, severity)) {
+      continue;
+    }
+
+    const ruleId = message.ruleId as string;
+    const severityName = severityLabel(message.severity);
+
+    if (!objectStats[ruleId]) {
+      objectStats[ruleId] = {};
+    }
+
+    objectStats[ruleId][severityName] =
+      (objectStats[ruleId][severityName] ?? 0) + 1;
+  }
+};
 
 const getDirName = (result: LintResult): string => {
   const dirname = path.dirname(result.filePath);
@@ -91,11 +53,38 @@ const getDirName = (result: LintResult): string => {
   return dirname === "." ? "Base Folder" : dirname;
 };
 
+export function byRule(
+  results: LintResult[],
+  severity?: SeverityLevel,
+): RuleStats {
+  const stats: RuleStats = {};
+
+  for (const result of results) {
+    loopOverMessages(stats, result, severity);
+  }
+
+  return stats;
+}
+
 export function byFolderAndRule(
   results: LintResult[],
   severity?: SeverityLevel,
 ): FolderStats {
-  const byDirName = groupBy(results, getDirName);
+  const stats: FolderStats = {};
 
-  return mapValues(byDirName, (messages) => byRule(messages, severity));
+  for (const result of results) {
+    if (result.messages.length === 0) {
+      continue;
+    }
+
+    const folderName = getDirName(result);
+
+    if (!stats[folderName]) {
+      stats[folderName] = {};
+    }
+
+    loopOverMessages(stats[folderName], result, severity);
+  }
+
+  return stats;
 }
