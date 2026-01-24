@@ -12,14 +12,14 @@ describe("chart", () => {
 
   describe("getObjectOutput", () => {
     it("should display single property object with correct format", () => {
-      const stats: RuleStats = { "no-comma-dangle": { Error: 7 } };
+      const stats: RuleStats = { "no-comma-dangle": { error: 7 } };
       const output = getObjectOutput(stats, maxWidth);
       assert.ok(output.includes("no-comma-dangle:"));
       assert.ok(output.includes("7"));
     });
 
     it("should handle warnings", () => {
-      const stats: RuleStats = { "no-comma-dangle": { Warning: 7 } };
+      const stats: RuleStats = { "no-comma-dangle": { warning: 7 } };
       const output = getObjectOutput(stats, maxWidth);
       assert.ok(output.includes("no-comma-dangle:"));
       assert.ok(output.includes("7"));
@@ -27,8 +27,8 @@ describe("chart", () => {
 
     it("should pad multiple rules to longest rule name", () => {
       const stats: RuleStats = {
-        "no-comma-dangle": { Error: 1 },
-        "no-empty": { Error: 1 },
+        "no-comma-dangle": { error: 1 },
+        "no-empty": { error: 1 },
       };
       const output = getObjectOutput(stats, maxWidth);
       const lines = output.trim().split("\n");
@@ -40,7 +40,7 @@ describe("chart", () => {
 
     it("should handle both errors and warnings in same rule", () => {
       const stats: RuleStats = {
-        "no-comma-dangle": { Error: 5, Warning: 3 },
+        "no-comma-dangle": { error: 5, warning: 3 },
       };
       const output = getObjectOutput(stats, maxWidth);
       const lines = output.trim().split("\n");
@@ -51,7 +51,7 @@ describe("chart", () => {
   describe("getStackedOutput", () => {
     it("should display stacked errors and warnings", () => {
       const stats: RuleStats = {
-        "no-comma-dangle": { Error: 5, Warning: 3 },
+        "no-comma-dangle": { error: 5, warning: 3 },
       };
       const output = getStackedOutput(stats, maxWidth);
       assert.ok(output.includes("no-comma-dangle:"));
@@ -61,7 +61,7 @@ describe("chart", () => {
 
     it("should handle rules with only errors", () => {
       const stats: RuleStats = {
-        "no-comma-dangle": { Error: 5 },
+        "no-comma-dangle": { error: 5 },
       };
       const output = getStackedOutput(stats, maxWidth);
       assert.ok(output.includes("no-comma-dangle:"));
@@ -72,16 +72,16 @@ describe("chart", () => {
   describe("getOutputByFolder", () => {
     it("should divide output by folder", () => {
       const stats: FolderStats = {
-        "src/utils": {
-          "no-comma-dangle": { Error: 5 },
+        "/src/utils": {
+          "no-comma-dangle": { error: 5 },
         },
-        "src/types": {
-          "no-unused-vars": { Warning: 3 },
+        "/src/types": {
+          "no-unused-vars": { warning: 3 },
         },
       };
       const output = getOutputByFolder(stats, maxWidth);
-      assert.ok(output.includes("src/utils:"));
-      assert.ok(output.includes("src/types:"));
+      assert.ok(output.includes("/src/utils:"));
+      assert.ok(output.includes("/src/types:"));
       assert.ok(output.includes("no-comma-dangle:"));
       assert.ok(output.includes("no-unused-vars:"));
     });

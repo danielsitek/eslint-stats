@@ -70,8 +70,7 @@ describe("stats", () => {
       suppressedMessages: [],
     },
     {
-      filePath:
-        "/home/danielsitek/Sites/csag/ecom2-fe/fectory/components/footer/shippay-badges/ShipPayBadges.stories.tsx",
+      filePath: "/components/footer/shippay-badges/ShipPayBadges.stories.tsx",
       messages: [],
       suppressedMessages: [],
       errorCount: 0,
@@ -82,8 +81,7 @@ describe("stats", () => {
       usedDeprecatedRules: [],
     },
     {
-      filePath:
-        "/home/danielsitek/Sites/csag/ecom2-fe/fectory/components/footer/shippay-badges/ShipPayBadges.tsx",
+      filePath: "/components/footer/shippay-badges/ShipPayBadges.tsx",
       messages: [],
       suppressedMessages: [],
       errorCount: 0,
@@ -94,8 +92,7 @@ describe("stats", () => {
       usedDeprecatedRules: [],
     },
     {
-      filePath:
-        "/home/danielsitek/Sites/csag/ecom2-fe/fectory/components/footer/socials/Socials.stories.tsx",
+      filePath: "/components/footer/socials/Socials.stories.tsx",
       messages: [
         {
           ruleId: null,
@@ -121,8 +118,7 @@ describe("stats", () => {
       usedDeprecatedRules: [],
     },
     {
-      filePath:
-        "/home/danielsitek/Sites/csag/ecom2-fe/fectory/components/forms/checkbox-as-figure/index.tsx",
+      filePath: "/components/forms/checkbox-as-figure/index.tsx",
       messages: [
         {
           ruleId: "@typescript-eslint/no-explicit-any",
@@ -202,22 +198,29 @@ describe("stats", () => {
 
   it("should return an aggregated object by rule, then severity", () => {
     const stats = byRule(eslintResults);
-    assert.strictEqual(Object.keys(stats).length, 2);
-    assert.deepStrictEqual(stats.id1, { Error: 2, Warning: 1 });
-    assert.deepStrictEqual(stats.id2, { Error: 1 });
+    assert.strictEqual(Object.keys(stats).length, 4);
+    assert.deepStrictEqual(stats.id1, { error: 2 });
+    assert.deepStrictEqual(stats.id2, { error: 1 });
+    assert.deepStrictEqual(stats.id3, { warning: 1 });
+    assert.deepStrictEqual(stats["@typescript-eslint/no-explicit-any"], {
+      error: 2,
+    });
   });
 
   it("should accept a second param, severity, which filters the severities", () => {
     const stats = byRule(eslintResults, 2);
-    assert.strictEqual(Object.keys(stats).length, 2);
-    assert.deepStrictEqual(stats.id1, { Error: 2 });
-    assert.deepStrictEqual(stats.id2, { Error: 1 });
+    assert.deepStrictEqual(Object.keys(stats).length, 3);
+    assert.deepStrictEqual(stats.id1, { error: 2 });
+    assert.deepStrictEqual(stats.id2, { error: 1 });
+    assert.deepStrictEqual(stats["@typescript-eslint/no-explicit-any"], {
+      error: 2,
+    });
   });
 
   describe("byFolderAndRule", () => {
     const byFolderResults: LintResult[] = [
       {
-        filePath: "path1/file1",
+        filePath: "/path1/file1.js",
         messages: [
           {
             ruleId: "id1",
@@ -243,7 +246,7 @@ describe("stats", () => {
         suppressedMessages: [],
       },
       {
-        filePath: "path1/file2",
+        filePath: "/path1/file2.js",
         messages: [
           {
             ruleId: "id1",
@@ -262,7 +265,7 @@ describe("stats", () => {
         suppressedMessages: [],
       },
       {
-        filePath: "path3",
+        filePath: "/path3/file3.js",
         messages: [
           {
             ruleId: "id1",
@@ -285,12 +288,12 @@ describe("stats", () => {
     it("should divide the results by folder", () => {
       const stats = byFolderAndRule(byFolderResults);
       const expectedResult = {
-        path1: {
-          id1: { Error: 2 },
-          id2: { Error: 1 },
+        "/path1": {
+          id1: { error: 2 },
+          id2: { error: 1 },
         },
-        "Base Folder": {
-          id1: { Warning: 1 },
+        "/path3": {
+          id1: { warning: 1 },
         },
       };
       assert.deepStrictEqual(stats, expectedResult);

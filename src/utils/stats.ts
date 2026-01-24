@@ -5,28 +5,8 @@ import type {
   RuleStats,
   FolderStats,
   SeverityLevel,
-  SeverityStats,
 } from "../types/types.js";
-import { names } from "./severities.js";
-
-// Native replacement for lodash countBy
-const countBy = <T>(
-  array: T[],
-  iterate: (item: T) => string,
-): Record<string, number> => {
-  return array.reduce<Record<string, number>>((result, item) => {
-    const key = String(iterate(item));
-
-    // Validate key to prevent prototype pollution
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
-      return result;
-    }
-
-    result[key] = (result[key] ?? 0) + 1;
-
-    return result;
-  }, {});
-};
+import { severityLabel } from "./severities.js";
 
 // Native replacement for lodash groupBy
 const groupBy = <T>(
@@ -61,59 +41,48 @@ const mapValues = <T, R>(
   );
 };
 
-const getStatsForRule = (ruleMessages: LintMessage[]): SeverityStats => {
-  return countBy(ruleMessages, (message) => names[message.severity as 1 | 2]);
-};
-
-const filterMessagesBySeverity = (
-  messages: LintMessage[],
-  severity?: SeverityLevel,
-): LintMessage[] => {
-  if (severity === undefined || (severity !== 1 && severity !== 2)) {
-    return messages;
-  }
-
-  return messages.filter((message) => message.severity === severity);
-};
-
-const groupMessagesByRuleId = (
-  messages: LintMessage[],
-): Record<string, LintMessage[]> => {
-  const filteredMessages = messages.filter(
-    (message) => typeof message.ruleId === "string" && message.ruleId.length,
+const isInvalidRuleId = (message: LintMessage): boolean => {
+  return (
+    typeof message.ruleId !== "string" || message.ruleId.trim().length === 0
   );
+};
 
-  return groupBy(filteredMessages, (message) => message.ruleId as string);
+const isSeverityFiltered = (
+  message: LintMessage,
+  severity?: SeverityLevel,
+): boolean => {
+  return severity !== undefined && message.severity !== severity;
 };
 
 export function byRule(
   results: LintResult[],
   severity?: SeverityLevel,
 ): RuleStats {
-  const allMessages = results
-    .flatMap((result) => result.messages)
-    .filter(
-      // Filter out not a string `ruleId` messages
-      (message) => typeof message.ruleId === "string" && message.ruleId.length,
-    );
+  // Single-pass optimization: flatten, filter, group, and count in one reduce
+  const stats: RuleStats = {};
 
-  console.log("===");
+  for (const result of results) {
+    for (const message of result.messages) {
+      if (isInvalidRuleId(message)) {
+        continue;
+      }
 
-  console.log("results:", results);
+      if (isSeverityFiltered(message, severity)) {
+        continue;
+      }
 
-  console.log("allMessages:", allMessages);
+      const ruleId = message.ruleId as string;
+      const severityName = severityLabel(message.severity);
 
-  const messagesInSeverities = filterMessagesBySeverity(allMessages, severity);
+      if (!stats[ruleId]) {
+        stats[ruleId] = {};
+      }
 
-  console.log("messagesInSeverities:", messagesInSeverities);
+      stats[ruleId][severityName] = (stats[ruleId][severityName] ?? 0) + 1;
+    }
+  }
 
-  const messagesByRuleId = groupMessagesByRuleId(messagesInSeverities);
-
-  console.log("messagesByRuleId:", messagesByRuleId);
-
-  console.log("===");
-
-  return mapValues(messagesByRuleId, getStatsForRule);
+  return stats;
 }
 
 const getDirName = (result: LintResult): string => {

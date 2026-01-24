@@ -3,11 +3,11 @@ import type { RuleStats, FolderStats, SeverityStats } from "../types/types.js";
 import { getString } from "./bar.js";
 
 const barColors = {
-  Error: "red" as const,
-  Warning: "yellow" as const,
+  error: "red" as const,
+  warning: "yellow" as const,
 };
 
-const allSeverities = ["Error", "Warning"] as const;
+const allSeverities = ["error", "warning"] as const;
 
 function getMaxRuleLength(stats: RuleStats): number {
   return Math.max(...Object.keys(stats).map((key) => key.length));
@@ -36,8 +36,8 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
   const maxRuleLength = getMaxRuleLength(stats);
   const maxResult = Math.max(
     ...Object.values(stats).flatMap((ruleStats) => [
-      ruleStats.Error ?? 0,
-      ruleStats.Warning ?? 0,
+      ruleStats.error ?? 0,
+      ruleStats.warning ?? 0,
     ]),
   );
   const maxResultLength = String(maxResult).length;
@@ -58,7 +58,7 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
         const countCell = magenta(String(count).padStart(maxResultLength));
         const barCell = getString(
           Math.floor(barRatio * count),
-          barColors[severity as "Error" | "Warning"],
+          barColors[severity as "error" | "warning"],
         );
         return `${ruleCell}${countCell}|${barCell}`;
       })
@@ -89,7 +89,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   const normalizedStats = Object.fromEntries(
     Object.entries(stats).map(([key, value]) => [
       key,
-      { Error: 0, Warning: 0, ...value },
+      { error: 0, warning: 0, ...value },
     ]),
   );
 
@@ -99,7 +99,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   for (const severity of allSeverities) {
     maxResults[severity] = Math.max(
       ...Object.values(stats).map((s) => {
-        const val = severity === "Error" ? s.Error : s.Warning;
+        const val = severity === "error" ? s.error : s.warning;
         return val ?? 0;
       }),
     );
@@ -113,7 +113,7 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   );
 
   const maxRuleSum = Math.max(
-    ...Object.values(normalizedStats).map((x) => x.Error + x.Warning),
+    ...Object.values(normalizedStats).map((x) => x.error + x.warning),
   );
 
   const barRatio = getBarRatio(
@@ -125,22 +125,22 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   );
 
   const getStackedBar = (ruleStats: {
-    Error: number;
-    Warning: number;
+    error: number;
+    warning: number;
   }): string => {
     return (
-      getString(Math.floor(barRatio * ruleStats.Error), barColors.Error) +
-      getString(Math.floor(barRatio * ruleStats.Warning), barColors.Warning)
+      getString(Math.floor(barRatio * ruleStats.error), barColors.error) +
+      getString(Math.floor(barRatio * ruleStats.warning), barColors.warning)
     );
   };
 
   return `${Object.entries(normalizedStats)
     .map(([ruleId, ruleStats]) => {
       const ruleCell = `${ruleId}: `.padEnd(maxRuleLength + 2);
-      const errorLength = maxResultLengths.Error ?? 0;
-      const warningLength = maxResultLengths.Warning ?? 0;
-      const errorCountCell = String(ruleStats.Error).padStart(errorLength);
-      const warningCountCell = String(ruleStats.Warning).padStart(
+      const errorLength = maxResultLengths.error ?? 0;
+      const warningLength = maxResultLengths.warning ?? 0;
+      const errorCountCell = String(ruleStats.error).padStart(errorLength);
+      const warningCountCell = String(ruleStats.warning).padStart(
         warningLength,
       );
       const countCell = magenta(`${errorCountCell},${warningCountCell}`);
