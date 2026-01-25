@@ -5,7 +5,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/danielsitek/eslint-stats)](https://github.com/danielsitek/eslint-stats/releases)
 [![NPM Version](https://img.shields.io/npm/v/%40danielsitek%2Feslint-stats)](https://www.npmjs.com/package/@danielsitek/eslint-stats)
 
-# Statistic Reporter for ESLint
+# Statistics Reporter for ESLint
 
 Modern TypeScript formatters for ESLint with aggregated error and warning statistics. Analyzes files by error frequency rather than location, making it easier to prioritize fixes when introducing ESLint to existing projects.
 
@@ -28,7 +28,7 @@ npm install --save-dev @danielsitek/eslint-stats
 
 ## Usage with ESLint
 
-Create file `stats.mjs`:
+Create a file named `stats.mjs`:
 
 ```js
 import { byErrorAndWarning } from "@danielsitek/eslint-stats/by-error-and-warning";
@@ -56,7 +56,7 @@ Displays aggregated statistics for both errors and warnings without file separat
 
 ### by-error-and-warning-stacked
 
-Similar to by-error-and-warning but displays errors and warnings stacked together when a rule has both severities across different files.
+Similar to `by-error-and-warning` but displays errors and warnings stacked together when a rule has both severities across different files.
 
 ### by-folder
 
