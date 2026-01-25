@@ -9,13 +9,13 @@ const barColors = {
 
 const allSeverities = ["error", "warning"] as const;
 
-function getMaxRuleLength(stats: RuleStats): number {
+const getMaxRuleLength = (stats: RuleStats): number => {
   return Math.max(...Object.keys(stats).map((key) => key.length));
-}
+};
 
-function getStringLength(num: number): number {
+const getStringLength = (num: number): number => {
   return String(num).length;
-}
+};
 
 const getBarRatio = (
   usedColumns: number,
@@ -32,7 +32,7 @@ const sortByKey = <T>(obj: Record<string, T>): T[] => {
     .map(([, value]) => value);
 };
 
-export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
+export const getObjectOutput = (stats: RuleStats, maxWidth: number): string => {
   const maxRuleLength = getMaxRuleLength(stats);
   const maxResult = Math.max(
     ...Object.values(stats).flatMap((ruleStats) => [
@@ -73,15 +73,18 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
   );
 
   return `${sortByKey(mappedStats).join("\n")}\n`;
-}
+};
 
-function isAnyRuleStacked(stats: RuleStats): boolean {
+const isAnyRuleStacked = (stats: RuleStats): boolean => {
   return Object.values(stats).some(
     (ruleData) => Object.keys(ruleData).length > 1,
   );
-}
+};
 
-export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
+export const getStackedOutput = (
+  stats: RuleStats,
+  maxWidth: number,
+): string => {
   if (!isAnyRuleStacked(stats)) {
     return getObjectOutput(stats, maxWidth);
   }
@@ -148,17 +151,17 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
       return `${ruleCell}${countCell}|${barCell}`;
     })
     .join("\n")}\n`;
-}
+};
 
 const getFolderOutput =
   (maxWidth: number) =>
   (folderStats: RuleStats, folderName: string): string =>
     `${underline(`${folderName}:`)}\n${getObjectOutput(folderStats, maxWidth)}`;
 
-export function getOutputByFolder(
+export const getOutputByFolder = (
   stats: FolderStats,
   maxWidth: number,
-): string {
+): string => {
   const filteredStats = Object.fromEntries(
     Object.entries(stats).filter(([, value]) => Object.keys(value).length > 0),
   );
@@ -168,4 +171,4 @@ export function getOutputByFolder(
       getFolderOutput(maxWidth)(folderStats, folderName),
     )
     .join("");
-}
+};

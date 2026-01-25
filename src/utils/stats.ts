@@ -47,10 +47,10 @@ const getDirName = (result: LintResult): string => {
   return dirname === "." ? "Base Folder" : dirname;
 };
 
-export function byRule(
+export const byRule = (
   results: LintResult[],
   severity?: SeverityLevel,
-): RuleStats {
+): RuleStats => {
   const stats: RuleStats = {};
 
   for (const result of results) {
@@ -58,12 +58,12 @@ export function byRule(
   }
 
   return stats;
-}
+};
 
-export function byFolderAndRule(
+export const byFolderAndRule = (
   results: LintResult[],
   severity?: SeverityLevel,
-): FolderStats {
+): FolderStats => {
   const stats: FolderStats = {};
 
   for (const result of results) {
@@ -81,4 +81,4 @@ export function byFolderAndRule(
   }
 
   return stats;
-}
+};
