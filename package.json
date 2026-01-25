@@ -1,6 +1,6 @@
 {
   "name": "@danielsitek/eslint-stats",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Modern TypeScript formatters for ESLint with aggregated error/warning statistics and visual graphs - Zero dependencies",
   "type": "module",
   "main": "./dist/index.js",
