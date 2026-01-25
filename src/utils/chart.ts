@@ -9,13 +9,13 @@ const barColors = {
 
 const allSeverities = ["error", "warning"] as const;
 
-function getMaxRuleLength(stats: RuleStats): number {
-  return Math.max(...Object.keys(stats).map((key) => key.length));
-}
+const getMaxRuleLength = (stats: RuleStats): number => {
+  return Object.keys(stats).reduce((max, key) => Math.max(max, key.length), 0);
+};
 
-function getStringLength(num: number): number {
+const getStringLength = (num: number): number => {
   return String(num).length;
-}
+};
 
 const getBarRatio = (
   usedColumns: number,
@@ -32,14 +32,12 @@ const sortByKey = <T>(obj: Record<string, T>): T[] => {
     .map(([, value]) => value);
 };
 
-export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
+export const getObjectOutput = (stats: RuleStats, maxWidth: number): string => {
   const maxRuleLength = getMaxRuleLength(stats);
-  const maxResult = Math.max(
-    ...Object.values(stats).flatMap((ruleStats) => [
-      ruleStats.error ?? 0,
-      ruleStats.warning ?? 0,
-    ]),
-  );
+  const maxResult = Object.values(stats).reduce((max, ruleStats) => {
+    const currentMax = Math.max(ruleStats.error ?? 0, ruleStats.warning ?? 0);
+    return Math.max(max, currentMax);
+  }, 0);
   const maxResultLength = String(maxResult).length;
 
   const barRatio = getBarRatio(
@@ -73,15 +71,18 @@ export function getObjectOutput(stats: RuleStats, maxWidth: number): string {
   );
 
   return `${sortByKey(mappedStats).join("\n")}\n`;
-}
+};
 
-function isAnyRuleStacked(stats: RuleStats): boolean {
+const isAnyRuleStacked = (stats: RuleStats): boolean => {
   return Object.values(stats).some(
     (ruleData) => Object.keys(ruleData).length > 1,
   );
-}
+};
 
-export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
+export const getStackedOutput = (
+  stats: RuleStats,
+  maxWidth: number,
+): string => {
   if (!isAnyRuleStacked(stats)) {
     return getObjectOutput(stats, maxWidth);
   }
@@ -97,12 +98,10 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
   const maxResults: Record<string, number> = {};
 
   for (const severity of allSeverities) {
-    maxResults[severity] = Math.max(
-      ...Object.values(stats).map((s) => {
-        const val = severity === "error" ? s.error : s.warning;
-        return val ?? 0;
-      }),
-    );
+    maxResults[severity] = Object.values(stats).reduce((max, s) => {
+      const val = severity === "error" ? s.error : s.warning;
+      return Math.max(max, val ?? 0);
+    }, 0);
   }
 
   const maxResultLengths = Object.fromEntries(
@@ -112,9 +111,9 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
     ]),
   );
 
-  const maxRuleSum = Math.max(
-    ...Object.values(normalizedStats).map((x) => x.error + x.warning),
-  );
+  const maxRuleSum = Object.values(normalizedStats).reduce((max, x) => {
+    return Math.max(max, x.error + x.warning);
+  }, 0);
 
   const barRatio = getBarRatio(
     maxRuleLength +
@@ -148,17 +147,17 @@ export function getStackedOutput(stats: RuleStats, maxWidth: number): string {
       return `${ruleCell}${countCell}|${barCell}`;
     })
     .join("\n")}\n`;
-}
+};
 
 const getFolderOutput =
   (maxWidth: number) =>
   (folderStats: RuleStats, folderName: string): string =>
     `${underline(`${folderName}:`)}\n${getObjectOutput(folderStats, maxWidth)}`;
 
-export function getOutputByFolder(
+export const getOutputByFolder = (
   stats: FolderStats,
   maxWidth: number,
-): string {
+): string => {
   const filteredStats = Object.fromEntries(
     Object.entries(stats).filter(([, value]) => Object.keys(value).length > 0),
   );
@@ -168,4 +167,4 @@ export function getOutputByFolder(
       getFolderOutput(maxWidth)(folderStats, folderName),
     )
     .join("");
-}
+};

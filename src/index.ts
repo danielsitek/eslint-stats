@@ -17,11 +17,3 @@ export const byErrorAndWarningStacked = getFormatterPath(
   "by-error-and-warning-stacked",
 );
 export const byFolder = getFormatterPath("by-folder");
-
-export default {
-  byError,
-  byWarning,
-  byErrorAndWarning,
-  byErrorAndWarningStacked,
-  byFolder,
-};
