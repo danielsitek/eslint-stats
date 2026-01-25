@@ -10,7 +10,7 @@ const barColors = {
 const allSeverities = ["error", "warning"] as const;
 
 const getMaxRuleLength = (stats: RuleStats): number => {
-  return Math.max(...Object.keys(stats).map((key) => key.length));
+  return Object.keys(stats).reduce((max, key) => Math.max(max, key.length), 0);
 };
 
 const getStringLength = (num: number): number => {
@@ -34,12 +34,10 @@ const sortByKey = <T>(obj: Record<string, T>): T[] => {
 
 export const getObjectOutput = (stats: RuleStats, maxWidth: number): string => {
   const maxRuleLength = getMaxRuleLength(stats);
-  const maxResult = Math.max(
-    ...Object.values(stats).flatMap((ruleStats) => [
-      ruleStats.error ?? 0,
-      ruleStats.warning ?? 0,
-    ]),
-  );
+  const maxResult = Object.values(stats).reduce((max, ruleStats) => {
+    const currentMax = Math.max(ruleStats.error ?? 0, ruleStats.warning ?? 0);
+    return Math.max(max, currentMax);
+  }, 0);
   const maxResultLength = String(maxResult).length;
 
   const barRatio = getBarRatio(
@@ -100,12 +98,10 @@ export const getStackedOutput = (
   const maxResults: Record<string, number> = {};
 
   for (const severity of allSeverities) {
-    maxResults[severity] = Math.max(
-      ...Object.values(stats).map((s) => {
-        const val = severity === "error" ? s.error : s.warning;
-        return val ?? 0;
-      }),
-    );
+    maxResults[severity] = Object.values(stats).reduce((max, s) => {
+      const val = severity === "error" ? s.error : s.warning;
+      return Math.max(max, val ?? 0);
+    }, 0);
   }
 
   const maxResultLengths = Object.fromEntries(
@@ -115,9 +111,9 @@ export const getStackedOutput = (
     ]),
   );
 
-  const maxRuleSum = Math.max(
-    ...Object.values(normalizedStats).map((x) => x.error + x.warning),
-  );
+  const maxRuleSum = Object.values(normalizedStats).reduce((max, x) => {
+    return Math.max(max, x.error + x.warning);
+  }, 0);
 
   const barRatio = getBarRatio(
     maxRuleLength +
