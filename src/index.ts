@@ -17,3 +17,4 @@ export const byErrorAndWarningStacked = getFormatterPath(
   "by-error-and-warning-stacked",
 );
 export const byFolder = getFormatterPath("by-folder");
+export const byPrometheus = getFormatterPath("by-prometheus");

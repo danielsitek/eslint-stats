@@ -62,6 +62,19 @@ Similar to `by-error-and-warning` but displays errors and warnings stacked toget
 
 Displays aggregated statistics grouped by folder. Errors are shown in red, warnings in yellow.
 
+### by-prometheus
+
+Exports ESLint statistics in Prometheus text exposition format for monitoring and alerting. Generates metrics compatible with Prometheus, Grafana, and other observability tools.
+
+**Metrics exported:**
+
+- `eslint_rule_violations_total{rule,severity,folder}` - Violations by rule, severity, and folder
+- `eslint_violations_by_severity_total{severity}` - Total violations by severity
+- `eslint_files_total` - Total files analyzed
+- `eslint_files_with_violations_total` - Files with violations
+- `eslint_files_clean_total` - Files without violations
+- `eslint_rules_violated_total` - Unique rules violated
+
 ## Demo
 
 The package includes demo scripts for testing formatters:
@@ -72,6 +85,7 @@ npm run demo:warning
 npm run demo:both
 npm run demo:stacked
 npm run demo:folder
+npm run demo:prometheus
 ```
 
 ## Requirements

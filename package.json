@@ -29,6 +29,10 @@
     "./by-folder": {
       "types": "./dist/formatters/by-folder.d.ts",
       "import": "./dist/formatters/by-folder.js"
+    },
+    "./by-prometheus": {
+      "types": "./dist/formatters/by-prometheus.d.ts",
+      "import": "./dist/formatters/by-prometheus.js"
     }
   },
   "files": [
@@ -45,7 +49,10 @@
     "visualization",
     "typescript",
     "zero-dependencies",
-    "eslint9"
+    "eslint9",
+    "prometheus",
+    "metrics",
+    "monitoring"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -63,7 +70,8 @@
     "demo:warning": "eslint .demo -f ./dist/formatters/by-warning.js -c .demo/eslint.config.mjs",
     "demo:both": "eslint .demo -f ./dist/formatters/by-error-and-warning.js -c .demo/eslint.config.mjs",
     "demo:stacked": "eslint .demo -f ./dist/formatters/by-error-and-warning-stacked.js -c .demo/eslint.config.mjs",
-    "demo:folder": "eslint .demo -f ./dist/formatters/by-folder.js -c .demo/eslint.config.mjs"
+    "demo:folder": "eslint .demo -f ./dist/formatters/by-folder.js -c .demo/eslint.config.mjs",
+    "demo:prometheus": "eslint .demo -f ./dist/formatters/by-prometheus.js -c .demo/eslint.config.mjs"
   },
   "repository": {
     "type": "git",
