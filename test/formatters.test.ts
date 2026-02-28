@@ -5,6 +5,7 @@ import { byWarning } from "../src/formatters/by-warning";
 import { byErrorAndWarning } from "../src/formatters/by-error-and-warning";
 import { byErrorAndWarningStacked } from "../src/formatters/by-error-and-warning-stacked";
 import { byFolder } from "../src/formatters/by-folder";
+import { byPrometheus } from "../src/formatters/by-prometheus";
 import type { LintResult } from "../src/types/types";
 
 describe("formatters", () => {
@@ -80,6 +81,156 @@ describe("formatters", () => {
       const output = byFolder(mockResults);
       assert.ok(typeof output === "string");
       assert.ok(output.length > 0);
+    });
+  });
+
+  describe("byPrometheus", () => {
+    const prometheusResults: LintResult[] = [
+      {
+        filePath: "src/utils/helper.js",
+        messages: [
+          {
+            ruleId: "no-unused-vars",
+            severity: 2,
+            message: "Unused variable",
+            line: 1,
+            column: 1,
+          },
+          {
+            ruleId: "no-console",
+            severity: 1,
+            message: "Unexpected console",
+            line: 2,
+            column: 1,
+          },
+        ],
+        errorCount: 1,
+        fatalErrorCount: 0,
+        warningCount: 1,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        usedDeprecatedRules: [],
+        suppressedMessages: [],
+      },
+      {
+        filePath: "src/types/types.ts",
+        messages: [
+          {
+            ruleId: "no-unused-vars",
+            severity: 2,
+            message: "Unused variable",
+            line: 5,
+            column: 1,
+          },
+        ],
+        errorCount: 1,
+        fatalErrorCount: 0,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        usedDeprecatedRules: [],
+        suppressedMessages: [],
+      },
+      {
+        filePath: "test/helper.test.js",
+        messages: [],
+        errorCount: 0,
+        fatalErrorCount: 0,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        usedDeprecatedRules: [],
+        suppressedMessages: [],
+      },
+    ];
+
+    it("should return valid Prometheus format", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(typeof output === "string");
+      assert.ok(output.length > 0);
+    });
+
+    it("should include metric headers (HELP and TYPE)", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(output.includes("# HELP eslint_rule_violations_total"));
+      assert.ok(output.includes("# TYPE eslint_rule_violations_total counter"));
+      assert.ok(output.includes("# HELP eslint_violations_by_severity_total"));
+      assert.ok(
+        output.includes("# TYPE eslint_violations_by_severity_total counter"),
+      );
+      assert.ok(output.includes("# HELP eslint_files_total"));
+      assert.ok(output.includes("# TYPE eslint_files_total counter"));
+    });
+
+    it("should include rule violations with labels", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(
+        output.includes('eslint_rule_violations_total{rule="no-unused-vars"'),
+      );
+      assert.ok(output.includes('severity="error"'));
+      assert.ok(output.includes('folder="src/utils"'));
+      assert.ok(output.includes('folder="src/types"'));
+    });
+
+    it("should include severity totals", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(
+        output.includes(
+          'eslint_violations_by_severity_total{severity="error"}',
+        ),
+      );
+      assert.ok(
+        output.includes(
+          'eslint_violations_by_severity_total{severity="warning"}',
+        ),
+      );
+    });
+
+    it("should include file statistics", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(output.includes("eslint_files_total 3"));
+      assert.ok(output.includes("eslint_files_with_violations_total 2"));
+      assert.ok(output.includes("eslint_files_clean_total 1"));
+    });
+
+    it("should include unique rules count", () => {
+      const output = byPrometheus(prometheusResults);
+      assert.ok(output.includes("eslint_rules_violated_total 2"));
+    });
+
+    it("should escape label values correctly", () => {
+      const specialResults: LintResult[] = [
+        {
+          filePath: 'src/special"path/file.js',
+          messages: [
+            {
+              ruleId: "rule-with-quotes",
+              severity: 2,
+              message: "Error",
+              line: 1,
+              column: 1,
+            },
+          ],
+          errorCount: 1,
+          fatalErrorCount: 0,
+          warningCount: 0,
+          fixableErrorCount: 0,
+          fixableWarningCount: 0,
+          usedDeprecatedRules: [],
+          suppressedMessages: [],
+        },
+      ];
+      const output = byPrometheus(specialResults);
+      assert.ok(output.includes('folder="src/special\\"path"'));
+    });
+
+    it("should handle empty results", () => {
+      const output = byPrometheus([]);
+      assert.ok(typeof output === "string");
+      assert.ok(output.includes("eslint_files_total 0"));
+      assert.ok(output.includes("eslint_files_with_violations_total 0"));
+      assert.ok(output.includes("eslint_files_clean_total 0"));
+      assert.ok(output.includes("eslint_rules_violated_total 0"));
     });
   });
 });
