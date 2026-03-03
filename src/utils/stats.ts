@@ -42,9 +42,13 @@ const loopOverMessages = (
 };
 
 const getDirName = (result: LintResult): string => {
-  const dirname = path.dirname(result.filePath);
+  const dirname = path.relative(process.cwd(), path.dirname(result.filePath));
 
-  return dirname === "." ? "Base Folder" : dirname;
+  if (dirname === "" || dirname === ".") {
+    return ".";
+  }
+
+  return dirname;
 };
 
 export const byRule = (
