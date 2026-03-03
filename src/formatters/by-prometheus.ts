@@ -1,6 +1,18 @@
 import type { LintResult, FolderStats } from "../types/types.js";
 import { byFolderAndRule } from "../utils/stats.js";
 
+export interface ByPrometheusOptions {
+  /**
+   * Prefix to prepend to folder paths in metrics.
+   * Useful for monorepo setups where ESLint runs from a subdirectory.
+   *
+   * @example
+   * createPrometheusFormatter({ folderPrefix: "fectory" })
+   * // folder="fectory/stores/data-layer"
+   */
+  folderPrefix?: string;
+}
+
 /**
  * Escapes label values for Prometheus format
  * Replaces backslashes, quotes, and newlines
@@ -45,6 +57,7 @@ const metricHeader = (name: string, help: string, type: string): string => {
  */
 const processFolderStats = (
   folderStats: FolderStats,
+  folderPrefix?: string,
 ): {
   lines: string[];
   severityTotals: Record<string, number>;
@@ -54,7 +67,9 @@ const processFolderStats = (
   const severityTotals: Record<string, number> = { error: 0, warning: 0 };
   const uniqueRules = new Set<string>();
 
-  for (const [folder, ruleStats] of Object.entries(folderStats)) {
+  for (const [rawFolder, ruleStats] of Object.entries(folderStats)) {
+    const folder = folderPrefix ? `${folderPrefix}/${rawFolder}` : rawFolder;
+
     for (const [rule, severityStats] of Object.entries(ruleStats)) {
       // Track unique rules
       uniqueRules.add(rule);
@@ -158,9 +173,13 @@ const generateFileMetrics = (results: LintResult[]): string[] => {
  * - eslint_rules_violated_total - unique rules violated
  *
  * @param results - ESLint results array
+ * @param folderPrefix - Optional prefix for folder paths
  * @returns Prometheus metrics as string
  */
-export const byPrometheus = (results: LintResult[]): string => {
+const formatPrometheus = (
+  results: LintResult[],
+  folderPrefix?: string,
+): string => {
   const folderStats = byFolderAndRule(results);
 
   // Single pass through folder stats for optimal performance
@@ -168,7 +187,7 @@ export const byPrometheus = (results: LintResult[]): string => {
     lines: ruleViolationsLines,
     severityTotals,
     uniqueRulesCount,
-  } = processFolderStats(folderStats);
+  } = processFolderStats(folderStats, folderPrefix);
 
   const sections: string[] = [];
 
@@ -242,6 +261,37 @@ export const byPrometheus = (results: LintResult[]): string => {
 
   // Join all sections with double newline (Prometheus convention)
   return sections.join("\n\n") + "\n";
+};
+
+/**
+ * Creates a Prometheus formatter with custom options.
+ * Useful for monorepo setups where a prefix is needed for folder paths.
+ *
+ * @param options - Formatter options
+ * @returns ESLint formatter function
+ *
+ * @example
+ * ```js
+ * import { createPrometheusFormatter } from "@danielsitek/eslint-stats/by-prometheus";
+ * export default createPrometheusFormatter({ folderPrefix: "fectory" });
+ * ```
+ */
+export const createPrometheusFormatter = (
+  options?: ByPrometheusOptions,
+): ((results: LintResult[]) => string) => {
+  const folderPrefix = options?.folderPrefix;
+
+  return (results: LintResult[]): string => {
+    return formatPrometheus(results, folderPrefix);
+  };
+};
+
+/**
+ * Formats ESLint results as Prometheus metrics.
+ * For monorepo setups with prefix support, use {@link createPrometheusFormatter}.
+ */
+export const byPrometheus = (results: LintResult[]): string => {
+  return formatPrometheus(results);
 };
 
 export default byPrometheus;

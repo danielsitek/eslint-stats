@@ -75,6 +75,18 @@ Exports ESLint statistics in Prometheus text exposition format for monitoring an
 - `eslint_files_clean_total` - Files without violations
 - `eslint_rules_violated_total` - Unique rules violated
 
+#### Monorepo support
+
+For monorepo setups where ESLint runs from a subdirectory, use `createPrometheusFormatter` with `folderPrefix` to prepend the package name to folder paths:
+
+```js
+import { createPrometheusFormatter } from "@danielsitek/eslint-stats/by-prometheus";
+
+export default createPrometheusFormatter({ folderPrefix: "my-package" });
+```
+
+This produces metrics with prefixed folder labels, e.g. `folder="my-package/src/utils"` instead of `folder="src/utils"`.
+
 ## Demo
 
 The package includes demo scripts for testing formatters:

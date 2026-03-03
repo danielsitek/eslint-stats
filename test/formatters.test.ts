@@ -5,7 +5,10 @@ import { byWarning } from "../src/formatters/by-warning";
 import { byErrorAndWarning } from "../src/formatters/by-error-and-warning";
 import { byErrorAndWarningStacked } from "../src/formatters/by-error-and-warning-stacked";
 import { byFolder } from "../src/formatters/by-folder";
-import { byPrometheus } from "../src/formatters/by-prometheus";
+import {
+  byPrometheus,
+  createPrometheusFormatter,
+} from "../src/formatters/by-prometheus";
 import type { LintResult } from "../src/types/types";
 
 describe("formatters", () => {
@@ -231,6 +234,54 @@ describe("formatters", () => {
       assert.ok(output.includes("eslint_files_with_violations_total 0"));
       assert.ok(output.includes("eslint_files_clean_total 0"));
       assert.ok(output.includes("eslint_rules_violated_total 0"));
+    });
+  });
+
+  describe("createPrometheusFormatter", () => {
+    const prefixResults: LintResult[] = [
+      {
+        filePath: "src/utils/helper.js",
+        messages: [
+          {
+            ruleId: "no-unused-vars",
+            severity: 2,
+            message: "Unused variable",
+            line: 1,
+            column: 1,
+          },
+        ],
+        errorCount: 1,
+        fatalErrorCount: 0,
+        warningCount: 0,
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        usedDeprecatedRules: [],
+        suppressedMessages: [],
+      },
+    ];
+
+    it("should prepend prefix to folder paths", () => {
+      const formatter = createPrometheusFormatter({ folderPrefix: "fectory" });
+      const output = formatter(prefixResults);
+      assert.ok(output.includes('folder="fectory/src/utils"'));
+    });
+
+    it("should work without prefix (same as byPrometheus)", () => {
+      const formatter = createPrometheusFormatter();
+      const output = formatter(prefixResults);
+      assert.ok(output.includes('folder="src/utils"'));
+      assert.ok(!output.includes("fectory"));
+    });
+
+    it("should work with empty options", () => {
+      const formatter = createPrometheusFormatter({});
+      const output = formatter(prefixResults);
+      assert.ok(output.includes('folder="src/utils"'));
+    });
+
+    it("should return a function", () => {
+      const formatter = createPrometheusFormatter({ folderPrefix: "app" });
+      assert.ok(typeof formatter === "function");
     });
   });
 });
