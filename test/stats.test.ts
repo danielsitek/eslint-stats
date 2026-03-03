@@ -218,9 +218,10 @@ describe("stats", () => {
   });
 
   describe("byFolderAndRule", () => {
+    const cwd = process.cwd();
     const byFolderResults: LintResult[] = [
       {
-        filePath: "/path1/file1.js",
+        filePath: `${cwd}/path1/file1.js`,
         messages: [
           {
             ruleId: "id1",
@@ -246,7 +247,7 @@ describe("stats", () => {
         suppressedMessages: [],
       },
       {
-        filePath: "/path1/file2.js",
+        filePath: `${cwd}/path1/file2.js`,
         messages: [
           {
             ruleId: "id1",
@@ -265,7 +266,7 @@ describe("stats", () => {
         suppressedMessages: [],
       },
       {
-        filePath: "/path3/file3.js",
+        filePath: `${cwd}/path3/file3.js`,
         messages: [
           {
             ruleId: "id1",
@@ -288,11 +289,11 @@ describe("stats", () => {
     it("should divide the results by folder", () => {
       const stats = byFolderAndRule(byFolderResults);
       const expectedResult = {
-        "/path1": {
+        path1: {
           id1: { error: 2 },
           id2: { error: 1 },
         },
-        "/path3": {
+        path3: {
           id1: { warning: 1 },
         },
       };
